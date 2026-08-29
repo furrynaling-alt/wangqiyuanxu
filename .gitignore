@@ -1,0 +1,29 @@
+# 隐私红线：聊天数据绝不入库
+data/
+*.analysis.md
+
+# 隐私背景图（用户私人图片，绝不开源）
+public/assets/bg.png
+public/assets/icon_1024.png
+
+# 发布产物
+release/
+node_modules/
+*.exe
+
+# 第三方依赖（用户 clone 后 pip install 重装）
+py/vendor/
+
+# 运行日志 & 临时文件
+_*.log
+_*.out
+*.err
+_*.js
+_*.py
+__pycache__/
+*.pyc
+*.tmp
+
+# 系统
+.DS_Store
+Thumbs.db

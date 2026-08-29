@@ -1,0 +1,23 @@
+{
+  "name": "wangqiyuanxu",
+  "version": "0.1.0",
+  "description": "往栖缘叙 · 数字生命工坊 — 聊天记录情感分析 + AI 探讨 + 数字分身。数据 100% 本地处理。",
+  "main": "server.js",
+  "bin": "server.js",
+  "pkg": {
+    "scripts": ["server.js", "lib/**/*.js"],
+    "assets": ["public/**/*"],
+    "targets": ["node24-win-x64"],
+    "outputPath": "release",
+    "compress": "GZip"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build": "pkg server.js --targets node24-win-x64 --output release/往栖缘叙.exe"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "private": false
+}

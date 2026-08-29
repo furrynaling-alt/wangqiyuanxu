@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>往栖缘叙 · 数字生命工坊</title>
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/icon_256.png">
+<meta name="theme-color" content="#5b6bff">
+<style>
+:root{
+  --accent:#5b6bff; --accent2:#f780a8; --grad:linear-gradient(135deg,var(--accent),var(--accent2));
+  --bg:#f5f6fb; --card:#ffffff; --card2:#f0f1f8; --ink:#16182b; --muted:#8a8ea6; --line:rgba(20,22,50,.08);
+  --soft:rgba(20,22,50,.05); --danger:#ff5f57; --ok:#28c840;
+  --r-lg:20px; --r-md:14px; --r-sm:10px;
+  --shadow:0 6px 24px rgba(30,32,80,.08); --shadow-lg:0 14px 44px rgba(30,32,80,.14);
+  --apple:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:var(--apple);color:var(--ink);background:var(--bg);overflow:hidden;-webkit-font-smoothing:antialiased}
+/* 背景（照片淡出 + 可调隐私压暗） */
+#bg{position:fixed;inset:0;z-index:0;background:#eef0f8 center/cover no-repeat;filter:blur(var(--blur,0px)) brightness(var(--bright,.9));transform:scale(1.05);opacity:var(--bgo,0)}
+#bg::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.86));opacity:var(--overlay,1);transition:opacity .3s}
+.shell{position:relative;z-index:2;display:flex;flex-direction:column;height:100vh;max-width:1200px;margin:0 auto}
+
+/* ══ 顶部 macOS 风格标题栏（红绿灯）══ */
+.titlebar{flex:none;height:46px;display:flex;align-items:center;gap:10px;padding:0 18px;background:transparent;border-bottom:1px solid transparent}
+.tb-center{flex:1;text-align:center}
+.tlights{display:flex;gap:8px;flex:none}
+.tdot{width:13px;height:13px;border-radius:50%;border:none;cursor:pointer;position:relative;box-shadow:inset 0 -2px 3px rgba(0,0,0,.14);transition:transform .18s}
+.tdot:hover{transform:scale(1.15)}
+.tdot:active{transform:scale(.9)}
+.tdot.close{background:#ff5f57}.tdot.min{background:#febc2e}.tdot.max{background:#28c840}
+.tdot span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s}
+.tdot:hover span{opacity:1}
+.tdot svg{width:7px;height:7px}
+.tb-center{flex:1;text-align:center;overflow:hidden}
+.tb-brand{font-size:16px;font-weight:800;letter-spacing:1.5px;background:linear-gradient(90deg,#6a79ff,#f780a8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tb-brand small{font-size:10px;font-weight:600;color:var(--muted);letter-spacing:3px;margin-left:8px;-webkit-text-fill-color:var(--muted)}
+.tb-right{display:flex;gap:8px;flex:none}
+.tb-icon{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.7);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink);transition:.18s}
+.tb-icon:hover{background:var(--card);border-color:var(--accent);color:var(--accent)}
+.tb-icon svg{width:18px;height:18px}
+
+/* ══ 主内容区 ══ */
+.main{flex:1;overflow-y:auto;padding:26px 30px 150px;scrollbar-width:none;-ms-overflow-style:none}
+.main::-webkit-scrollbar{display:none}
+.page{display:none;animation:fadey .3s ease}
+.page.on{display:block}
+@keyframes fadey{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+.p-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.p-ico{width:46px;height:46px;border-radius:14px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(120,120,255,.3)}
+.p-ico svg{width:24px;height:24px}
+.p-title{font-size:24px;font-weight:800;letter-spacing:.5px}
+.p-sub{color:var(--muted);font-size:13px;margin-top:3px;margin-bottom:22px}
+.p-hint{color:var(--muted);font-size:13px;line-height:1.7}
+
+/* ══ 卡片 ══ */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:20px}
+.card+.card{margin-top:16px}
+.grid{display:grid;gap:14px}
+.cards{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.bigcard{cursor:pointer;transition:.2s;position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px}
+.bigcard:hover{transform:translateY(-4px);border-color:rgba(120,120,255,.4);box-shadow:var(--shadow-lg)}
+.bigcard .em{width:46px;height:46px;border-radius:13px;background:var(--soft);display:flex;align-items:center;justify-content:center;margin-bottom:14px;color:var(--accent)}
+.bigcard:hover .em{background:var(--grad);color:#fff}
+.bigcard .em svg{width:24px;height:24px}
+.bigcard b{font-size:16px;display:block}
+.bigcard p{color:var(--muted);font-size:12px;margin-top:6px;line-height:1.6}
+.bigcard .go{position:absolute;right:16px;top:16px;color:var(--muted);font-size:18px;line-height:1}
+
+/* ══ 底部药丸导航 ══ */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:50;display:flex;gap:4px;padding:6px;background:rgba(255,255,255,.85);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--line);border-radius:999px;box-shadow:0 10px 34px rgba(30,32,80,.16)}
+.tab{display:flex;align-items:center;gap:7px;padding:11px 17px;border-radius:999px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;transition:.2s;white-space:nowrap}
+.tab:active{transform:scale(.96)}
+.tab svg{width:19px;height:19px;flex:none}
+.tab:hover{color:var(--ink);background:var(--soft)}
+.tab.on{background:var(--grad);color:#fff;box-shadow:0 6px 16px rgba(120,120,255,.35)}
+
+/* ══ 按钮/表单 ══ */
+.btn{display:inline-flex;align-items:center;gap:7px;background:var(--grad);border:none;color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;transition:.18s;font-family:inherit}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn.danger{background:#fff2f2;border:1px solid rgba(255,95,87,.3);color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn svg{width:16px;height:16px}
+input,select,textarea{background:var(--card2);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:11px 13px;font-size:14px;outline:none;width:100%;font-family:inherit;transition:.18s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(91,107,255,.12)}
+label{display:block;color:var(--muted);font-size:12px;margin:12px 0 6px;font-weight:600}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+
+/* ══ 统计 ══ */
+.statrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.stat .v{font-size:30px;font-weight:800;line-height:1}
+.stat .k{color:var(--muted);font-size:12px;margin-top:6px}
+.stat .bar{height:6px;background:var(--soft);border-radius:3px;margin-top:12px;overflow:hidden}
+.stat .bar i{display:block;height:100%;border-radius:3px;background:var(--grad);transition:width .8s cubic-bezier(.22,1,.36,1)}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl td,.tbl th{padding:9px 11px;border-bottom:1px solid var(--line);text-align:left}
+.tbl th{color:var(--muted);font-weight:600;font-size:12px}
+.tbl tr:last-child td{border-bottom:none}
+
+/* ══ 聊天 ══ */
+.chat{display:flex;flex-direction:column;height:calc(100vh - 250px);min-height:420px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--bg);position:relative}
+/* 聊天区背景（微信风格浅色纹理） */
+.wx-chat .msgs{background:linear-gradient(160deg,#eef1fb 0%,#f6f2fa 40%,#f0f4f9 100%);position:relative}
+.wx-chat .msgs::before{content:'';position:absolute;inset:0;opacity:.35;pointer-events:none;background-image:radial-gradient(rgba(120,120,255,.09) 1.5px, transparent 1.5px);background-size:26px 26px;border-radius:inherit}
+.msg{display:flex;align-items:flex-end;gap:8px;max-width:86%}
+.msg.me{align-self:flex-end;flex-direction:row-reverse}
+.msg.ta{align-self:flex-start}
+.m-av{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none;border:1px solid var(--line)}
+.m-wrap{max-width:76%;padding:10px 14px;border-radius:16px;font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word;box-shadow:0 2px 8px rgba(30,32,80,.06)}
+.msg.me .m-wrap{background:var(--grad);color:#fff;border-bottom-right-radius:5px}
+.msg.ta .m-wrap{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+.msg .who{font-size:11px;opacity:.75;margin-bottom:3px;font-weight:600}
+.msg.ta .who{color:var(--muted)}
+.inputbar{display:flex;gap:10px;padding:12px;border-top:1px solid var(--line);background:var(--card)}
+.inputbar input{flex:1}
+
+/* ══ Markdown ══ */
+.md{font-size:14px;line-height:1.85;color:var(--ink)}
+.md h2{font-size:18px;margin:20px 0 10px;padding-left:11px;border-left:3px solid var(--accent)}
+.md h3{font-size:15px;margin:16px 0 8px}
+.md ul,.md ol{padding-left:22px;margin:8px 0}
+.md blockquote{border-left:3px solid var(--accent2);padding:8px 14px;color:var(--muted);margin:10px 0;background:var(--soft);border-radius:0 10px 10px 0}
+.md table{border-collapse:collapse;margin:12px 0;font-size:13px;width:100%}
+.md td,.md th{border:1px solid var(--line);padding:7px 10px}
+.md th{background:var(--soft)}
+.md code{background:var(--soft);padding:2px 6px;border-radius:6px;font-size:12px}
+.md hr{border:none;border-top:1px solid var(--line);margin:16px 0}
+
+/* ══ 标签/芯片 ══ */
+.tag{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;border-radius:999px;font-size:11px;background:var(--soft);color:var(--accent);margin-right:6px;font-weight:600}
+.tag svg{width:12px;height:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12px;margin:4px 6px 4px 0;cursor:pointer;font-weight:600;transition:.18s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--grad);border-color:transparent;color:#fff;box-shadow:0 4px 12px rgba(120,120,255,.3)}
+.chip svg{width:14px;height:14px}
+.muted{color:var(--muted);font-size:12px}
+.empty{color:var(--muted);text-align:center;padding:44px 20px;font-size:13px;line-height:1.9}
+.drag{border:2px dashed rgba(91,107,255,.4);border-radius:var(--r-lg);padding:46px;text-align:center;color:var(--muted);cursor:pointer;transition:.2s;background:var(--card)}
+.drag:hover,.drag.over{border-color:var(--accent);background:#f3f4ff;color:var(--ink)}
+.drag svg{width:34px;height:34px;color:var(--accent);margin-bottom:10px}
+.drag b{color:var(--ink);font-size:15px;display:block;margin-bottom:6px}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-thumb{background:rgba(30,32,80,.14);border-radius:4px}
+.toast{position:fixed;bottom:92px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:12px 22px;border-radius:12px;font-size:13px;z-index:200;display:none;box-shadow:var(--shadow-lg)}
+
+/* 选择卡片（整合用） */
+.pick{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid var(--line);border-radius:14px;cursor:pointer;transition:.15s;margin-bottom:9px;background:var(--card)}
+.pick:hover{border-color:var(--accent)}
+.pick.sel{border-color:var(--accent);background:#f3f4ff;box-shadow:0 0 0 3px rgba(91,107,255,.12)}
+.pick .cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--line);flex:none;display:flex;align-items:center;justify-content:center;transition:.15s}
+.pick.sel .cb{background:var(--grad);border-color:transparent}
+.pick.sel .cb svg{width:12px;height:12px;color:#fff}
+.pick .cb svg{opacity:0}
+.pick.sel .cb svg{opacity:1}
+.pick .pi{flex:1;min-width:0}
+.pick .pi b{font-size:14px;display:block}
+.pick .pi span{color:var(--muted);font-size:11px;display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:720px){.tab{padding:10px 13px;gap:5px}.main{padding:20px 16px 150px}}
+
+/* ══ 设置两栏 ══ */
+.set2{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+@media (max-width:900px){.set2{grid-template-columns:1fr}}
+#api-list{margin-top:8px}
+.api-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--card2)}
+.api-item .ai-tag{width:30px;height:30px;border-radius:8px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
+.api-item .ai-body{flex:1;min-width:0}
+.api-item .ai-body b{font-size:13px;display:block}
+.api-item .ai-body span{font-size:11px;color:var(--muted);display:block;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.api-item button{width:26px;height:26px;border-radius:8px;background:#fff2f2;border:1px solid rgba(255,95,87,.3);color:var(--danger);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.api-item button:hover{background:var(--danger);color:#fff}
+.api-item .minibtn{width:26px;height:26px;border-radius:8px;background:var(--card);border:1px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.api-item .minibtn:hover{border-color:var(--accent);color:var(--accent)}
+.api-item .minibtn.use.rounded{background:var(--grad);color:#fff;border-color:transparent}
+
+/* ══ 微信式左右布局（探讨/分身）—— 固定不整体滚动 ══ */
+.wechat{display:flex;gap:14px;height:calc(100vh - 168px);min-height:420px;max-height:calc(100vh - 168px);align-items:stretch;overflow:hidden;margin-top:2px}
+.wx-side{width:250px;flex:none;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);display:flex;flex-direction:column;overflow:hidden;min-height:0}
+.wx-search{display:flex;align-items:center;gap:7px;padding:10px 12px;border-bottom:1px solid var(--line);flex:none}
+.wx-search svg{width:16px;height:16px;color:var(--muted);flex:none}
+.wx-search input{border:none;background:transparent;padding:0;flex:1;font-size:13px}
+.wx-search input:focus{box-shadow:none}
+.wx-list{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.wx-list::-webkit-scrollbar{width:6px}.wx-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+.wx-contact{display:flex;align-items:center;gap:11px;padding:11px 14px;cursor:pointer;transition:.15s;border-bottom:1px solid var(--line)}
+.wx-contact:hover{background:var(--soft)}
+.wx-contact.sel{background:#f0f1ff}
+.wx-avatar{width:40px;height:40px;border-radius:12px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;flex:none;overflow:hidden}
+.wx-avatar img{width:100%;height:100%;object-fit:cover;border-radius:12px}
+.wx-info{flex:1;min-width:0}
+.wx-info b{font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-info span{font-size:11px;color:var(--muted);display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-side .empty{font-size:12px}
+.wx-chat{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden;height:100%}
+.wx-header{flex:none;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--card);font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.wx-header .wx-cat{flex:none}
+#ad-title,#av-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-cat select{width:auto;padding:5px 10px;font-size:12px;font-weight:600;border-radius:9px}
+.wx-chat .chat{height:100%;max-height:none;min-height:0;flex:1;overflow:hidden}
+.wx-chat .msgs{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.wx-chat .inputbar{flex:none}
+@media (max-width:900px){.wx-side{width:200px}}
+
+/* ══ 分析页子导航 ══ */
+.an-tabs{display:flex;gap:6px;margin:0 0 18px;padding:5px;background:var(--card);border:1px solid var(--line);border-radius:999px;width:max-content;box-shadow:var(--shadow)}
+.an-tab{display:flex;align-items:center;gap:6px;padding:9px 18px;border-radius:999px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;transition:.18s;white-space:nowrap}
+.an-tab:hover{color:var(--ink);background:var(--soft)}
+.an-tab.on{background:var(--grad);color:#fff;box-shadow:0 4px 12px rgba(120,120,255,.32)}
+.an-tab svg{width:15px;height:15px}
+.an-body{display:none}
+.an-body.on{display:block;animation:fadey .25s}
+/* 统计卡片加宽 */
+.statrow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.stat .v{font-size:30px;font-weight:800;line-height:1}
+.stat .k{color:var(--muted);font-size:12px;margin-top:6px}
+/* 历史记录列表 */
+.hist-item{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--line);border-radius:14px;margin-bottom:9px;background:var(--card);cursor:pointer;transition:.15s}
+.hist-item:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.hist-item.sel{border-color:var(--accent);background:#f0f1ff}
+.hist-item .hi-ico{width:38px;height:38px;border-radius:11px;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.hist-item .hi-ico svg{width:19px;height:19px}
+.hist-item .hi-body{flex:1;min-width:0}
+.hist-item .hi-body b{font-size:14px;display:block}
+.hist-item .hi-body span{font-size:11px;color:var(--muted);display:block;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-empty{color:var(--muted);text-align:center;padding:30px;font-size:13px}
+/* 报告预览 */
+.report-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:22px}
+/* 活跃时段/类型 柱状条 */
+.hour-row{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px}
+.hour-row>span{width:52px;color:var(--muted);flex:none}
+.hour-row>span:first-child{text-align:right}
+.hour-bar{flex:1;height:9px;border-radius:99px;background:var(--soft);overflow:hidden}
+.hour-bar i{display:block;height:100%;border-radius:99px;background:var(--grad);transition:width .6s var(--ios-ease)}
+.hour-row>b{width:36px;text-align:right;font-size:12px;font-weight:700;flex:none}
+.an-body .row-wrap{gap:10px}
+/* 首页快捷功能条 */
+.quick-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.quick-card{display:flex;flex-direction:column;align-items:center;gap:9px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:18px 14px;cursor:pointer;transition:.2s;box-shadow:var(--shadow);color:var(--ink);font-family:var(--apple)}
+.quick-card:hover{transform:translateY(-3px);border-color:rgba(120,120,255,.4);box-shadow:var(--shadow-lg)}
+.quick-card svg{width:22px;height:22px;color:var(--accent)}
+.quick-card span{font-size:13px;font-weight:700}
+/* 时光线 */
+.tl-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}
+.tl-row:last-child{border-bottom:none}
+.tl-date{width:92px;flex:none;color:var(--accent);font-weight:700}
+.tl-bar{flex:1;height:8px;background:var(--soft);border-radius:99px;overflow:hidden}
+.tl-bar i{display:block;height:100%;background:var(--grad);border-radius:99px}
+.tl-row>b{width:44px;text-align:right;font-size:12px}
+/* 温度计表盘 */
+.gauge-wrap{text-align:center}
+.gauge-dial{width:150px;height:150px;border-radius:50%;margin:6px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:conic-gradient(var(--accent) var(--w), var(--soft) 0);position:relative}
+.gauge-dial::before{content:'';position:absolute;inset:10px;border-radius:50%;background:var(--card)}
+.gauge-num{position:relative;z-index:1;font-size:34px;font-weight:800;color:var(--ink)}
+.gauge-label{position:relative;z-index:1;font-size:13px;color:var(--muted);margin-top:2px}
+/* 开关 */
+.switch{width:46px;height:26px;border-radius:99px;background:var(--card2);border:1px solid var(--line);position:relative;cursor:pointer;transition:.2s;flex:none}
+.switch::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.switch.on{background:var(--grad);border-color:transparent}
+.switch.on::after{left:22px}
+/* 统计图表 */
+.chart-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-top:4px}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px}
+.chart-card b{font-size:13px;display:block;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div class="shell">
+
+  <!-- 顶部栏（只保留应用名） -->
+  <div class="titlebar">
+    <div class="tb-center"><span class="tb-brand">往栖缘叙<small>DIGITAL LIFE</small></span></div>
+  </div>
+
+  <!-- 内容 -->
+  <main class="main" id="main">
+
+    <!-- 首页 -->
+    <section class="page on" id="p-home">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11 12 3l9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9.5V21h14V9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="p-title">往栖缘叙</div></div>
+      <div class="p-sub">让离开的人，以另一种方式在场。全程本地运行，数据不上传。</div>
+      <div class="grid cards">
+        <div class="bigcard" onclick="go('import')"><span class="go">›</span><div class="em"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><b>导入记录</b><p>QQ / 微信导出的 JSON 拖进来即识别，支持多平台整合</p></div>
+        <div class="bigcard" onclick="go('analysis')"><span class="go">›</span><div class="em"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 4-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>情感分析</b><p>主动/被爱/冷淡三指数，+ Sternberg · Gottman · 依恋类型</p></div>
+        <div class="bigcard" onclick="go('avatar')"><span class="go">›</span><div class="em"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><b>创建数字分身</b><p>用 TA 的口吻说话——告别与陪伴的容器，不是真人</p></div>
+        <div class="bigcard" onclick="go('advisor')"><span class="go">›</span><div class="em"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><b>AI 军师</b><p>多视角探讨：情感军师 / 老板 / 兄弟 / 深度思考</p></div>
+      </div>
+      <!-- 快捷功能条 -->
+      <div style="height:14px"></div>
+      <div class="quick-row">
+        <button class="quick-card" onclick="go('timing')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>主动陪伴</span></button>
+        <button class="quick-card" onclick="go('timeline')"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h18M6 12V6M12 12V9M18 12v-4M6 18h12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>时光线</span></button>
+        <button class="quick-card" onclick="go('thermo')"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="6" stroke="currentColor" stroke-width="1.9"/></svg><span>关系温度计</span></button>
+        <button class="quick-card" onclick="go('treehole')"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 1 1 2.3 5.7L4 20l1.3-3.6A8 8 0 0 1 4 12z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 12h6M12 9v6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg><span>心声树洞</span></button>
+        <button class="quick-card" onclick="go('memories')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.9"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span>纪念日</span></button>
+        <button class="quick-card" onclick="go('export')"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4 4 4-4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>导出报告</span></button>
+        <button class="quick-card" onclick="go('settings')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.9"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.56-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.08A1.7 1.7 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.08a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z" stroke="currentColor" stroke-width="1.6"/></svg><span>API 接入</span></button>
+      </div>
+      <div style="height:18px"></div>
+      <div class="card">
+        <b style="font-size:15px">已有记录</b>
+        <div id="home-records" style="margin-top:12px"></div>
+      </div>
+      <div style="height:16px"></div>
+      <div class="card">
+        <div class="row" style="gap:14px;align-items:center">
+          <img src="assets/icon_256.png" style="width:52px;height:52px;border-radius:16px;object-fit:cover">
+          <div style="flex:1;min-width:0">
+            <b>关于我</b>
+            <p class="muted" style="margin-top:6px;line-height:1.7">「往栖缘叙 · 数字生命工坊」——让离开的人以另一种方式在场。<br>纯本地运行，数据绝不上传。<br>作者：纳棂 NALING · <a href="https://naling.net" target="_blank" style="color:var(--accent);text-decoration:none">naling.net</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 导入 -->
+    <section class="page" id="p-import">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="p-title">导入记录</div></div>
+      <div class="p-sub">只做 JSON 收集：QCE / WeFlow 负责导出，这里负责读取。数据不出本机。</div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="drag" id="drop">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 16.5c0 2 1.5 3.5 3.7 3.5h8.6c2.2 0 3.7-1.5 3.7-3.5S18.5 13 16.3 13a6 6 0 0 0-11.5-1.5C3.7 12.5 4 14.5 4 16.5z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4v9M8.5 9.5 12 13l3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <b>把导出的 JSON / 文本拖到这里</b>
+          支持 QCE 导出 · 微信 WeFlow · 带时间戳文本 · 任意 messages 数组
+        </div>
+        <input type="file" id="file" multiple accept=".json,.txt,.md,.jsonl" style="display:none">
+      </div>
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:6px"><b style="font-size:15px">记录列表</b><button class="btn ghost" onclick="openMerge()" id="btn-merge" style="display:none"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 12h5m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>整合同平台</button></div>
+        <div id="record-list"></div>
+      </div>
+    </section>
+
+    <!-- 导出报告 -->
+    <section class="page" id="p-export">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="p-title">导出报告</div></div>
+      <div class="p-sub">把分析报告导出为可下载的文件，方便分享或归档。数据始终在本机。</div>
+      <div class="card" style="max-width:560px">
+        <label>选择记录</label>
+        <select id="ex-rec"></select>
+        <div style="height:12px"></div>
+        <div class="row wrap">
+          <button class="btn" onclick="exportReport()"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>导出 Markdown</button>
+          <span class="muted" id="ex-status">无报告时会提示先做 AI 分析</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 主动陪伴 -->
+    <section class="page" id="p-timing">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21c4.4 0 8-3.6 8-8s-3.6-8-8-8-8 3.6-8 8c0 1.6.5 3.1 1.3 4.4L4 20l3.6-1.3c1.3.8 2.8 1.3 4.4 1.3z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="9" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="13" r="1" fill="currentColor"/><circle cx="15" cy="13" r="1" fill="currentColor"/></svg></div><div class="p-title">主动陪伴</div></div>
+      <div class="p-sub">让数字分身主动来找你说话——到点软件内提醒你，陪你说说话。纯本地，不会真的发给 TA，零风险。</div>
+      <div class="card" style="max-width:560px">
+        <label>选择记录（绑定要陪伴的语气）</label>
+        <select id="tm-rec"></select>
+        <div class="row" style="margin-top:12px;justify-content:space-between">
+          <div><b style="font-size:14px">开启主动陪伴</b><p class="muted" style="margin-top:4px">到点后，分身主动在你界面里和你说话</p></div>
+          <div class="switch on" id="sw-act" onclick="toggleActive(this)"></div>
+        </div>
+        <label>主动频率</label>
+        <select id="tm-freq">
+          <option value="daily">每天</option>
+          <option value="hourly">每小时</option>
+        </select>
+        <div class="row" style="margin-top:12px">
+          <label style="margin:0">主动时间</label>
+          <input id="tm-time" type="time" value="09:00">
+        </div>
+        <label>主动说的话（用自己的话，分身会用 TA 的语气说）</label>
+        <textarea id="tm-text" rows="2" placeholder="例如：好久没见你了，最近怎么都不来找我说话呀"></textarea>
+        <div style="height:12px"></div>
+        <button class="btn" onclick="saveTiming()"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>保存主动陪伴</button>
+        <div style="height:14px"></div>
+        <b style="font-size:13px;color:var(--muted)">未来的主动消息</b>
+        <div id="tm-list" style="margin-top:8px"></div>
+        <p class="muted" style="margin-top:12px;line-height:1.7">提示：主动陪伴只在软件打开时触发，弹出提醒引导你去和分身说话。数字分身不会自动发消息给真实的 TA。</p>
+      </div>
+    </section>
+
+    <!-- 时光线 -->
+    <section class="page" id="p-timeline">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h18M6 12V6M12 12V9M18 12v-4M6 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></div><div class="p-title">时光线</div></div>
+      <div class="p-sub">沿着时间，重走你们走过的路。</div>
+      <div class="card">
+        <label>选择记录</label>
+        <select id="tl-rec"></select>
+        <div style="height:14px"></div>
+        <div id="tl-list"></div>
+      </div>
+    </section>
+
+    <!-- 关系温度计 -->
+    <section class="page" id="p-thermo">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="15" r="6" stroke="currentColor" stroke-width="1.9"/></svg></div><div class="p-title">关系温度计</div></div>
+      <div class="p-sub">这段关系现在多少度？一眼看清冷暖。</div>
+      <div class="card">
+        <label>选择记录</label>
+        <select id="th-rec"></select>
+        <div style="height:14px"></div>
+        <div id="th-gauge"></div>
+      </div>
+    </section>
+
+    <!-- 心声树洞 -->
+    <section class="page" id="p-treehole">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 1 1 2.3 5.7L4 20l1.3-3.6A8 8 0 0 1 4 12z" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="M9 12h6M12 9v6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div><div class="p-title">心声树洞</div></div>
+      <div class="p-sub">把没说出口的话，交给 TA 的数字分身听。</div>
+      <div class="card">
+        <label>选择记录（TA 来听你说）</label>
+        <select id="th-rec2"></select>
+        <label>写下你的心里话</label>
+        <textarea id="th-input" rows="4" placeholder="写点什么都行，TA 会听……"></textarea>
+        <div style="height:12px"></div>
+        <button class="btn" onclick="treeholeSend()"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l2 4.2 4.6.6-3.3 3.2.8 4.6L12 13.5 7.9 15.6l.8-4.6L5.4 7.8 10 7.2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>说给 TA 听</button>
+        <div style="height:14px"></div>
+        <div id="th-reply"></div>
+      </div>
+    </section>
+
+    <!-- 纪念日 -->
+    <section class="page" id="p-memories">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="p-title">纪念日</div></div>
+      <div class="p-sub">值得记住的日子，一个都不落下。</div>
+      <div class="card" style="max-width:560px">
+        <label>纪念日名称</label>
+        <input id="mm-name" placeholder="例如：我们认识的第三天">
+        <label>日期</label>
+        <input id="mm-date" type="date">
+        <div style="height:12px"></div>
+        <button class="btn" onclick="saveMem()"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>保存纪念日</button>
+        <div style="height:14px"></div>
+        <div id="mem-list"></div>
+      </div>
+    </section>
+
+    <!-- 整合 -->
+    <section class="page" id="p-merge">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 12h6m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="p-title">多平台整合</div></div>
+      <div class="p-sub">同一个人可能来自 QQ / 微信等多个平台。勾选后合并成一条完整时间线（按时间排序，自动去重）。</div>
+      <div class="card" style="margin-bottom:16px">
+        <label>选择要整合的记录（≥2 条）</label>
+        <div id="merge-list"></div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="doMerge()"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 12h5m0 0 3-3m-3 3 3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>整合选中</button>
+        <button class="btn ghost" onclick="go('import')">取消</button>
+        <span class="muted" id="merge-status"></span>
+      </div>
+    </section>
+
+    <!-- 分析 -->
+    <section class="page" id="p-analysis">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 4-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="p-title">情感分析</div></div>
+      <div class="p-sub">全量统计 + AI 深度鉴定 + 历史报告</div>
+      <!-- 子导航 -->
+      <div class="an-tabs" id="an-tabs">
+        <button class="an-tab on" data-tab="stats"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><path d="M7 15l4-5 3 3 4-7" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>统计</button>
+        <button class="an-tab" data-tab="ai"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.6L18.4 9.4 13.8 11.2 12 15.8 10.2 11.2 5.6 9.4 10.2 7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>AI 分析</button>
+        <button class="an-tab" data-tab="history"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7M3 3v4h4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>历史</button>
+      </div>
+      <!-- 统计 tab -->
+      <div class="an-body on" id="anb-stats">
+        <div class="card" style="margin-bottom:16px">
+          <label>选择记录</label>
+          <select id="an-rec"></select>
+          <div style="height:12px"></div>
+          <div class="row wrap">
+            <button class="btn" id="an-stats-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 4-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>计算统计</button>
+            <span class="muted">不需 Key，纯本地计算</span>
+          </div>
+        </div>
+        <div id="an-stats"></div>
+      </div>
+      <!-- AI 分析 tab -->
+      <div class="an-body" id="anb-ai">
+        <div class="card" style="margin-bottom:16px">
+          <label>选择记录</label>
+          <select id="an-rec-ai"></select>
+          <label>分析视角</label>
+          <div class="row wrap" id="view-chips"><span class="muted">加载中…</span></div>
+          <div style="height:12px"></div>
+          <div class="row wrap">
+            <button class="btn" id="an-ai-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.6L18.4 9.4 13.8 11.2 12 15.8 10.2 11.2 5.6 9.4 10.2 7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M18 16l.9 2.4 2.1.9-2.1.9L18 22.6l-.9-2.4-2.1-.9 2.1-.9z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span id="an-ai-label">生成 AI 深度分析</span></button>
+            <span class="muted" id="an-status">需要 API Key</span>
+          </div>
+        </div>
+        <div id="an-ai"></div>
+      </div>
+      <!-- 历史 tab -->
+      <div class="an-body" id="anb-history">
+        <div class="card" style="margin-bottom:16px">
+          <label>历史情感报告</label>
+          <div id="an-history"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 探讨（微信式：左联系右聊天） -->
+    <section class="page" id="p-advisor">
+      <div class="wechat">
+        <div class="wx-side">
+          <div class="wx-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="ad-search" placeholder="搜索联系人" oninput="renderAdapterList()"></div>
+          <b style="font-size:13px;display:block;padding:8px 14px 4px;color:var(--muted)">联系人</b>
+          <div class="wx-list" id="ad-list"></div>
+        </div>
+        <div class="chat wx-chat">
+          <div class="wx-header" id="ad-header"><span id="ad-title">选择一个联系人开始探讨</span>
+            <div class="wx-cat">
+              <select id="ad-cat" onchange="changeAdvisorCat()">
+                <option value="love">真心军师</option>
+                <option value="lgbt">同性恋军师</option>
+                <option value="boss">老板军师</option>
+                <option value="bro">兄弟军师</option>
+                <option value="deep">深度军师</option>
+              </select>
+            </div>
+          </div>
+          <div class="msgs" id="ad-msgs"><div class="empty" style="padding:24px">左侧选择一份记录，就跟军师聊起来</div></div>
+          <div class="inputbar">
+            <input id="ad-in" placeholder="问军师任何问题…" onkeydown="if(event.key==='Enter')talkAdvisor()">
+            <button class="btn" onclick="talkAdvisor()">发送</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 分身（微信式：左联系右对话） -->
+    <section class="page" id="p-avatar">
+      <div class="wechat">
+        <div class="wx-side">
+          <div class="wx-search"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input id="av-search" placeholder="搜索联系人" oninput="renderAvatarList()"></div>
+          <b style="font-size:13px;display:block;padding:8px 14px 4px;color:var(--muted)">复刻谁</b>
+          <div class="row" style="padding:6px 12px">
+            <span class="chip on" id="av-side-them" onclick="setClone('them')"><svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-2.7 2.7-5 6-5s6 2.3 6 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="9" r="2.5" stroke="currentColor" stroke-width="1.7"/><path d="M16.5 14.5c2.5 0 4.5 1.8 4.5 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>对方</span>
+            <span class="chip" id="av-side-me" onclick="setClone('me')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>自己</span>
+          </div>
+          <b style="font-size:13px;display:block;padding:8px 14px 4px;color:var(--muted)">联系人</b>
+          <div class="wx-list" id="av-list"></div>
+          <div style="padding:8px 12px;border-top:1px solid var(--line)">
+            <button class="btn ghost" style="width:100%;justify-content:center" onclick="toggleMemory()"><svg viewBox="0 0 24 24" fill="none" width="15" height="15"><path d="M12 3l2 4.2 4.6.6-3.3 3.2.8 4.6L12 13.5 7.9 15.6l.8-4.6L5.4 7.8 10 7.2z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>记忆图谱</button>
+            <div id="av-memory" style="display:none;margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="chat wx-chat">
+          <div class="wx-header" id="av-header">选择一个联系人复刻 TA 的语气</div>
+          <div class="msgs" id="av-msgs"><div class="empty" style="padding:24px">左侧选一份记录，复刻 TA，从这里开始对话</div></div>
+          <div class="inputbar">
+            <input id="av-in" placeholder="跟 TA 说点什么…" onkeydown="if(event.key==='Enter')talkAvatar()">
+            <button class="btn" onclick="talkAvatar()">发送</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 设置（两栏：左 API 管理 + 右 外观/其他） -->
+    <section class="page" id="p-settings">
+      <div class="p-head"><div class="p-ico"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.56 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.56-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.08A1.7 1.7 0 0 0 10 3.09V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1.03 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87v.08a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z" stroke="currentColor" stroke-width="1.6"/></svg></div><div class="p-title">设置</div></div>
+      <div class="p-sub">API 管理 + 外观 + 隐私。所有设置只保存在本机。</div>
+      <div class="set2">
+        <!-- 左栏：API 管理 -->
+        <div class="card">
+          <b style="font-size:15px">AI 接口</b>
+          <label>API 地址（OpenAI 兼容）</label>
+          <input id="st-base" placeholder="https://api.deepseek.com">
+          <label>API Key</label>
+          <input id="st-key" type="password" placeholder="sk-...">
+          <label>模型</label>
+          <input id="st-model" placeholder="deepseek-chat">
+          <div style="height:12px"></div>
+          <button class="btn" onclick="saveApi()"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>保存当前 API</button>
+          <p class="muted" style="margin-top:10px;line-height:1.7">DeepSeek 默认 <code>https://api.deepseek.com</code> / <code>deepseek-chat</code>。任意 OpenAI 兼容接口都行。Key 只存本机。</p>
+          <div style="height:14px"></div>
+          <b style="font-size:13px;color:var(--muted)">历史 API 列表</b>
+          <div id="api-list"></div>
+          <div style="height:18px;border-top:1px solid var(--line);margin-top:14px"></div>
+          <b style="font-size:15px">分身技能 / 设定</b>
+          <label>技能名</label>
+          <input id="sk-name" placeholder="例如：会安慰人、记得每个纪念日">
+          <label>技能规则 / 提示词</label>
+          <textarea id="sk-content" rows="3" placeholder="告诉分身一条规则或能力，比如：每次我说心情不好，就先抱抱我再说正事"></textarea>
+          <div style="height:12px"></div>
+          <button class="btn ghost" onclick="addSkill()"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>添加技能</button>
+          <div id="sk-list" style="margin-top:10px"></div>
+        </div>
+        <!-- 右栏：外观 + 隐私 -->
+        <div class="card">
+          <b style="font-size:15px">外观 & 隐私</b>
+          <label>背景</label>
+          <div class="row wrap">
+            <span class="chip on" id="bg-default" onclick="setBg('default')"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M9 3v18" stroke="currentColor" stroke-width="1.8"/></svg>默认浅色</span>
+            <span class="chip" id="bg-photo" onclick="setBg('photo')"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" stroke="currentColor" stroke-width="1.6"/><path d="M3 17l5-4 4 3 4-3 5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>照片</span>
+            <button class="chip" onclick="uploadBg()"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 17l5-4 4 3 4-3 5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 4v6M9.5 7.5 12 10l2.5-2.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>上传背景</button>
+          </div>
+          <label>背景模糊度（隐私保护）</label>
+          <input id="st-blur" type="range" min="0" max="100" value="0">
+          <div class="row" style="margin-top:12px">
+            <span class="chip" id="bg-blur-off" onclick="setBlur(0)">关闭模糊</span>
+            <span class="chip" id="bg-blur-mid" onclick="setBlur(55)">中度</span>
+          </div>
+          <label style="margin-top:14px">白色蒙版覆盖</label>
+          <div class="row" style="justify-content:space-between">
+            <p class="muted" style="margin:0">关闭后露出纯背景图，不再压暗</p>
+            <div class="switch on" id="sw-overlay" onclick="setOverlay(!S.overlay)"></div>
+          </div>
+          <label style="margin-top:14px">我的头像（聊天里显示）</label>
+          <div class="row">
+            <img id="self-avatar-preview" src="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--line);display:none">
+            <button class="chip" onclick="uploadSelfAvatar()"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3v12M8 7l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>上传我的头像</button>
+          </div>
+          <div style="height:12px"></div>
+          <button class="btn ghost" onclick="saveSettings()"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>保存设置</button>
+          <input type="file" id="bg-file" accept="image/*" style="display:none">
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 底部药丸导航 -->
+  <nav class="tabbar" id="tabbar">
+    <button class="tab on" data-p="home"><svg viewBox="0 0 24 24" fill="none"><path d="M3 11 12 3l9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9.5V21h14V9.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>首页</span></button>
+    <button class="tab" data-p="import"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>导入</span></button>
+    <button class="tab" data-p="analysis"><svg viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 4-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>分析</span></button>
+    <button class="tab" data-p="advisor"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>探讨</span></button>
+    <button class="tab" data-p="avatar"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M4 21c0-3.3 3.6-6 8-6s8 2.7 8 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>分身</span></button>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const S = { chats: [], current: null, cloneSide: 'them', blur: 55, bgMode: 'default' };
+let S_VIEWS = {};
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg, ms = 2600){ const t = $('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', ms); }
+
+// 路由
+function go(p){
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  document.querySelectorAll('.page').forEach(x => x.classList.toggle('on', x.id === 'p-' + p));
+  if (p === 'import' || p === 'export' || p === 'timing') refresh();
+  if (p === 'analysis' || p === 'advisor' || p === 'avatar') refresh();
+  if (p === 'timeline') { refresh(); setTimeout(renderTimeline, 300); }
+  if (p === 'thermo') { refresh(); setTimeout(renderThermo, 300); }
+  if (p === 'treehole') refresh();
+  if (p === 'memories') { refresh(); setTimeout(renderMems, 300); }
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => go(b.dataset.p));
+
+// 背景
+function applyBg(){
+  const b = $('bg');
+  b.style.backgroundImage = 'none';
+  if (S.bgMode === 'photo') b.style.backgroundImage = 'url(assets/bg.png)';
+  else if (S.bgMode === 'custom') b.style.backgroundImage = "url('/custom-bg')";
+  b.style.borderRadius = '0';
+  b.style.setProperty('--blur', (S.blur/100*10) + 'px');
+  const on = S.bgMode !== 'default';
+  // 覆盖白蒙版：关闭覆盖时蒙版隐去，露出纯背景
+  const ov = S.overlay ? 1 : 0;
+  b.style.setProperty('--overlay', S.overlay ? '1' : '0');
+  b.style.setProperty('--bgo', on ? '0.9' : '0');
+  b.style.setProperty('--bright', on ? '1' : '1');
+  // 同步覆盖开关 UI
+  const sw = $('sw-overlay'); if(sw) sw.classList.toggle('on', !!S.overlay);
+}
+function setBg(m){ S.bgMode = m; $('bg-default').classList.toggle('on', m==='default'); $('bg-photo').classList.toggle('on', m==='photo'); applyBg(); }
+function setOverlay(v){ S.overlay = v; applyBg(); }
+
+// 复刻对象
+function setClone(s){ S.cloneSide = s; $('av-side-them').classList.toggle('on', s==='them'); $('av-side-me').classList.toggle('on', s==='me');
+  if (S.current) { const who = s==='them' ? S.current.contact : (S.current.selfName||'你'); $('av-header').textContent = '数字分身 · ' + who; } }
+
+async function api(url, opt){ const r = await fetch(url, opt); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || r.status); return j; }
+async function refresh(){
+  const j = await api('/api/status');
+  S.chats = j.chats || [];
+  renderHome(); renderRecords(); renderSelects(); renderMergeList(); toggleMergeBtn();
+  renderAdapterList(); renderAvatarList(); renderApiList(); renderTimingList();
+  loadViews(); renderSkillList();
+}
+// 探讨/分身 左侧联系人列表选中后设置 S.current
+function pickRecord(id){ S.current = S.chats.find(c => c.id === id) || null; return S.current; }
+function renderAdapterList(){
+  const q = ($('ad-search')?.value || '').toLowerCase();
+  const el = $('ad-list'); if(!el) return;
+  const list = S.chats.filter(c => !q || (c.contact||'').toLowerCase().includes(q));
+  if(!list.length){ el.innerHTML = '<div class="empty">还没有记录，先去导入</div>'; return; }
+  el.innerHTML = list.map(c => `<div class="wx-contact ${S.current&&S.current.id===c.id?'sel':''}" onclick="selectAdapter('${c.id}')">
+    ${avatarHtml(c)}
+    <div class="wx-info"><b>${esc(c.contact||'联系人')}</b><span>${(c.total||0)} 条 · ${esc(c.source||'')}</span></div>
+  </div>`).join('');
+}
+function selectAdapter(id){
+  pickRecord(id);
+  $('ad-header').textContent = '军师 · ' + (S.current?S.current.contact:'');
+  renderAdapterList();
+}
+function renderAvatarList(){
+  const q = ($('av-search')?.value || '').toLowerCase();
+  const el = $('av-list'); if(!el) return;
+  const list = S.chats.filter(c => !q || (c.contact||'').toLowerCase().includes(q));
+  if(!list.length){ el.innerHTML = '<div class="empty">还没有记录，先去导入</div>'; return; }
+  el.innerHTML = list.map(c => `<div class="wx-contact ${S.current&&S.current.id===c.id?'sel':''}" onclick="selectAvatar('${c.id}')">
+    ${avatarHtml(c)}
+    <div class="wx-info"><b>${esc(c.contact||'联系人')}</b><span>${(c.total||0)} 条 · ${c.hasAnalysis?'已分析':'未分析'}</span></div>
+  </div>`).join('');
+}
+// 头像 HTML（有头像显示图，无头像显示首字）
+function avatarHtml(c){
+  if(c.hasAvatar && c.id) return `<div class="wx-avatar"><img src="/api/avatar/${c.id}?t=${c.ver||Date.now()}" alt=""></div>`;
+  return `<div class="wx-avatar">${esc((c.contact||'?')[0])}</div>`;
+}
+// 记忆图谱
+async function toggleMemory(){
+  const el = $('av-memory'); if(!el) return;
+  if(el.style.display === 'none'){ el.style.display = 'block'; await renderMemory(); }
+  else { el.style.display = 'none'; }
+}
+async function renderMemory(){
+  const el = $('av-memory'); if(!el) return;
+  if(!S.current){ el.innerHTML = '<div class="muted" style="font-size:12px">先选一个联系人</div>'; return; }
+  try {
+    const j = await api('/api/memory/' + S.current.id);
+    const entries = j.entries || [];
+    if(!entries.length){ el.innerHTML = '<div class="muted" style="font-size:12px;padding:8px 2px">还没有记忆——跟 TA 聊几句，我会记住你们说的关键事</div>'; return; }
+    el.innerHTML = entries.slice().reverse().map(e => `<div style="padding:6px 0;border-bottom:1px solid var(--line);font-size:12px"><span style="color:var(--accent);font-weight:700">[${esc(e.time||'')}]</span> ${esc(e.summary||'')}</div>`).join('');
+  } catch(e){ el.innerHTML = '<div class="muted" style="font-size:12px">加载失败</div>'; }
+}
+function selectAvatar(id){
+  pickRecord(id);
+  const who = S.cloneSide === 'them' ? (S.current?S.current.contact:'TA') : (S.current?S.current.selfName||'你':'你');
+  $('av-header').textContent = '数字分身 · ' + who;
+  renderAvatarList();
+}
+function renderHome(){
+  const el = $('home-records');
+  if (!S.chats.length) { el.innerHTML = '<div class="empty">还没有记录——去「导入」页拖一份 JSON 吧。开源版首次打开是空的，由你导入属于自己的数据。</div>'; return; }
+  el.innerHTML = S.chats.map(c => `<div style="margin-bottom:9px"><span class="tag"><svg viewBox="0 0 24 24" fill="none"><path d="M20 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" stroke="currentColor" stroke-width="1.8"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" stroke="currentColor" stroke-width="1.8"/></svg>${esc(c.contact)}</span><span class="muted">${c.total||0} 条 · ${(c.dateRange||[]).join(' ~ ')} · ${c.hasAnalysis ? '已分析' : '未分析'}</span></div>`).join('');
+}
+function renderRecords(){
+  const el = $('record-list');
+  if (!S.chats.length) { el.innerHTML = '<div class="empty">空。把 QCE / WeFlow 导出的 JSON 拖进来即可</div>'; return; }
+  el.innerHTML = S.chats.map(c => `<div class="card" style="margin-top:10px;padding:15px 17px">
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div style="min-width:0;display:flex;gap:12px;align-items:center">
+        <div style="flex:none">${c.hasAvatar ? `<img src="/api/avatar/${c.id}?t=${c.ver||Date.now()}" style="width:52px;height:52px;border-radius:14px;object-fit:cover;border:1px solid var(--line)">` : `<div class="wx-avatar">${esc((c.displayName||c.contact||'?')[0])}</div>`}</div>
+        <div style="min-width:0">
+          <b>${esc(c.displayName||c.contact||'联系人')}</b> <span class="muted">${c.total||0} 条 · ${c.days||''} 天 · ${esc(c.source||'')}</span><br>
+          <span class="muted">${(c.dateRange||[]).join(' ~ ')}</span> · 主动 ${c.scores?c.scores.simp_index:'-'} / 被爱 ${c.scores?c.scores.loved_index:'-'} / 冷淡 ${c.scores?c.scores.cold_index:'-'}
+        </div>
+      </div>
+      <div class="row">
+        <button class="btn ghost" onclick="renameRecord('${c.id}','${c.displayName||c.contact||''}')"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3l2 4.2 4.6.6-3.3 3.2.8 4.6L12 13.5 7.9 15.6l.8-4.6L5.4 7.8 10 7.2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>命名</button>
+        <button class="btn ghost" onclick="uploadRecordAvatar('${c.id}')"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3v12M8 7l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>头像</button>
+        <button class="btn ghost" onclick="selectRecord('${c.id}')">选择</button>
+        <button class="btn danger" onclick="delRecord('${c.id}')">删除</button>
+      </div>
+    </div>
+  </div>`).join('');
+}
+// 重命名记录
+async function renameRecord(id, name){
+  const nv = prompt('给这个联系人起个名字（可自定义）:', name || '');
+  if(nv === null) return;
+  if(!nv.trim()){ toast('名称不能为空',2600); return; }
+  await api('/api/record/rename', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, name: nv.trim() }) });
+  refresh(); toast('已命名：' + nv.trim());
+}
+// 上传头像
+function uploadRecordAvatar(id){
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.onchange = (e) => {
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      fetch('/api/record/avatar', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, data: rd.result }) })
+        .then(r=>r.json()).then(j=>{ if(j.ok){ toast('头像已上传'); if(S.current && S.current.id===id) S.current.ver=Date.now(); if(S.chats.find(c=>c.id===id)) S.chats.find(c=>c.id===id).ver=Date.now(); refresh(); } else toast('上传失败: '+j.error); }).catch(()=>toast('上传失败',3000));
+    };
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+function renderSelects(){
+  ['an-rec','an-rec-ai','ex-rec','tm-rec','tl-rec','th-rec','th-rec2'].forEach(id => { const el = $(id); if (!S.chats.length) { el.innerHTML = '<option>请先导入记录</option>'; return; } el.innerHTML = S.chats.map(c => `<option value="${c.id}">${esc(c.contact)} (${c.total||0}条)</option>`).join(''); });
+}
+// 时光线
+async function renderTimeline(){
+  const el = $('tl-list'); if(!el) return;
+  const id = $('tl-rec').value; if(!id){ el.innerHTML = '<div class="empty">先选一份记录</div>'; return; }
+  try {
+    const st = await api('/api/stats/' + id);
+    const daily = Object.entries(st.daily_trend||{}).sort((a,b)=>a[0]<b[0]?-1:1);
+    if(!daily.length){ el.innerHTML = '<div class="empty">暂无数据</div>'; return; }
+    el.innerHTML = daily.map(([d,n]) => `<div class="tl-row"><span class="tl-date">${esc(d)}</span><div class="tl-bar"><i style="width:${Math.min(100, Math.round(n/ (Math.max(...daily.map(x=>x[1]))||1) *100))}%"></i></div><b>${n} 条</b></div>`).join('');
+  } catch(e){ el.innerHTML = '<div class="empty">加载失败</div>'; }
+}
+// 关系温度计
+async function renderThermo(){
+  const el = $('th-gauge'); if(!el) return;
+  const id = $('th-rec').value; if(!id){ el.innerHTML = '<div class="empty">先选一份记录</div>'; return; }
+  try {
+    const st = await api('/api/stats/' + id);
+    const sc = st.scores||{};
+    const warmth = Math.round(((sc.loved_index||0)+(sc.simp_index||0))/2);
+    const cold = sc.cold_index||0;
+    const label = cold >= 40 ? '凉了' : (warmth>=70?'热恋':warmth>=50?'有温度':warmth>=30?'普通':'冷淡');
+    el.innerHTML = `<div class="gauge-wrap">
+      <div class="gauge-dial" style="--w:${warmth}%"><div class="gauge-num">${warmth}°</div><div class="gauge-label">${label}</div></div>
+      <div class="row wrap" style="gap:8px;margin-top:14px">
+        <span class="tag">主动 ${sc.simp_index??'-'}</span><span class="tag">被爱 ${sc.loved_index??'-'}</span><span class="tag">冷淡 ${cold}</span>
+      </div>
+    </div>`;
+  } catch(e){ el.innerHTML = '<div class="empty">加载失败</div>'; }
+}
+// 心声树洞
+async function treeholeSend(){
+  const id = $('th-rec2').value; const text = $('th-input').value.trim();
+  if(!id){ toast('先选一份记录',2600); return; }
+  if(!text){ toast('写点什么吧',2600); return; }
+  const el = $('th-reply'); el.innerHTML = '<div class="muted">TA 正在听……</div>';
+  try {
+    const full = await streamTalk('/api/talk', { id, mode:'persona', cloneSide:'them', message: text, history: [] }, (f)=>{ el.innerHTML = '<div class="card md">' + esc(f) + '</div>'; });
+    $('th-input').value='';
+  } catch(e){ el.innerHTML = '<div class="muted">⚠️ ' + esc(e.message) + '</div>'; }
+}
+// 纪念日
+function renderMems(){
+  const el = $('mem-list'); if(!el) return;
+  const list = JSON.parse(localStorage.getItem('wqyx_mem')||'[]');
+  if(!list.length){ el.innerHTML = '<div class="muted" style="padding:6px 2px;font-size:12px">还没有纪念日</div>'; return; }
+  el.innerHTML = list.map((m,i) => `<div class="pick"><div class="pi"><b>${esc(m.name)}</b><span>${esc(m.date)}</span></div><button style="border:none;background:transparent;color:var(--danger);cursor:pointer;font-size:12px" onclick="delMem(${i})">删除</button></div>`).join('');
+}
+function saveMem(){
+  const name = $('mm-name').value.trim(), date = $('mm-date').value;
+  if(!name||!date){ toast('填一下名称和日期',2600); return; }
+  const list = JSON.parse(localStorage.getItem('wqyx_mem')||'[]');
+  list.push({ name, date }); localStorage.setItem('wqyx_mem', JSON.stringify(list));
+  $('mm-name').value=''; renderMems(); toast('纪念日已保存');
+}
+function delMem(i){ const list = JSON.parse(localStorage.getItem('wqyx_mem')||'[]'); list.splice(i,1); localStorage.setItem('wqyx_mem', JSON.stringify(list)); renderMems(); }
+// ── 导出报告 ──
+async function exportReport(){
+  const id = $('ex-rec').value; if(!id){ toast('先选记录',2600); return; }
+  $('ex-status').textContent = '导出中…';
+  try {
+    const r = await fetch('/api/report/' + id);
+    const j = await r.json();
+    if(!j.text){ toast('这份记录还没有分析报告，先去「分析」生成',3600); $('ex-status').textContent = '无报告'; return; }
+    const blob = new Blob([j.text], {type:'text/markdown;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const contact = (S.chats.find(c=>c.id===id)?.contact||'报告');
+    a.download = contact + '_情感分析报告.md';
+    a.click(); URL.revokeObjectURL(a.href);
+    $('ex-status').textContent = '✅ 已导出'; toast('报告已导出');
+  } catch(e){ $('ex-status').textContent = '❌ '+e.message; }
+}
+// ── 主动陪伴 ──
+const ACT_KEY = 'wqyx_active';
+function getActive(){
+  try { return JSON.parse(localStorage.getItem(ACT_KEY)||'null'); } catch { return null; }
+}
+function renderTimingList(){
+  const el = $('tm-list'); if(!el) return;
+  const act = getActive();
+  if(!act || !act.enabled){ el.innerHTML = '<div class="muted" style="padding:6px 2px;font-size:12px">尚未开启主动陪伴</div>'; return; }
+  el.innerHTML = `<div class="pick"><div class="pi"><b>${act.freq==='hourly'?'每小时':'每天'} ${esc(act.time||'')}</b><span>${esc(act.text||'')}</span></div><button style="border:none;background:transparent;color:var(--danger);cursor:pointer;font-size:12px" onclick="disableActive()">关闭</button></div>`;
+}
+function toggleActive(el){ el.classList.toggle('on'); }
+function disableActive(){ localStorage.removeItem(ACT_KEY); $('sw-act').classList.remove('on'); renderTimingList(); toast('已关闭'); }
+function saveTiming(){
+  const text = $('tm-text').value.trim(); const time = $('tm-time').value; const freq = $('tm-freq').value;
+  if(!text){ toast('写一句主动的话',2600); return; }
+  localStorage.setItem(ACT_KEY, JSON.stringify({ enabled:true, text, time, freq }));
+  $('sw-act').classList.add('on');
+  renderTimingList(); toast('主动陪伴已开启');
+}
+// 主动消息触发：软件打开后定时检查
+let ACT_TIMER=null;
+function startActiveCheck(){
+  clearInterval(ACT_TIMER);
+  ACT_TIMER = setInterval(() => {
+    const act = getActive();
+    if(!act || !act.enabled) return;
+    const now = new Date();
+    const hm = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    const lastKey = 'wqyx_last_' + (act.freq==='hourly' ? (now.getDate()+'-'+now.getHours()) : now.getDate());
+    const last = localStorage.getItem(lastKey);
+    if(act.freq==='hourly' || hm === act.time){
+      if(last === 'done') return;
+      if(act.freq==='hourly'){
+        // 每小时一次
+        localStorage.setItem(lastKey,'done');
+        showActivePop(act);
+      } else {
+        // 每天固定时间点附近（跨分钟容忍）
+        if(hm >= act.time && hm < addMin(act.time, 3)){ localStorage.setItem(lastKey,'done'); showActivePop(act); }
+      }
+    }
+  }, 20000);
+}
+function addMin(hm, m){ const [h,mm]=hm.split(':').map(Number); const t=new Date(); t.setHours(h); t.setMinutes(mm+m); return String(t.getHours()).padStart(2,'0')+':'+String(t.getMinutes()).padStart(2,'0'); }
+function showActivePop(act){
+  toast('💌 ' + (act.text||'TA 想你了，过来陪陪我吧'), 6000);
+}
+startActiveCheck();
+// 分析页子导航
+function anGo(tab){
+  document.querySelectorAll('.an-tab').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
+  document.querySelectorAll('.an-body').forEach(x => x.classList.toggle('on', x.id === 'anb-' + tab));
+  if (tab === 'history') renderHistory();
+}
+function selectRecord(id){ S.current = S.chats.find(c => c.id === id) || null; if (S.current) { go('analysis'); toast('已选择：' + S.current.contact); } }
+async function delRecord(id){ await api('/api/chats/' + id, { method: 'DELETE' }); refresh(); toast('已删除'); }
+
+// ── 整合 ──
+const mergeSel = new Set();
+function toggleMergeBtn(){ $('btn-merge').style.display = S.chats.length >= 2 ? '' : 'none'; }
+function openMerge(){ go('merge'); renderMergeList(); }
+function renderMergeList(){
+  const el = $('merge-list');
+  if (!S.chats.length) { el.innerHTML = '<div class="empty">先导入至少两份来自不同平台的记录</div>'; return; }
+  el.innerHTML = S.chats.map(c => `<div class="pick ${mergeSel.has(c.id)?'sel':''}" onclick="toggleMerge('${c.id}')"><div class="cb"><svg viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="pi"><b>${esc(c.contact)}</b><span>${c.total||0} 条 · ${c.days||''} 天 · ${esc(c.source||'')} · ${(c.dateRange||[]).join(' ~ ')}</span></div></div>`).join('');
+}
+function toggleMerge(id){ mergeSel.has(id) ? mergeSel.delete(id) : mergeSel.add(id); renderMergeList(); }
+async function doMerge(){
+  const ids = Array.from(mergeSel);
+  if (ids.length < 2) { toast('至少选两条才能整合', 3000); return; }
+  $('merge-status').textContent = '整合中…';
+  try {
+    const j = await api('/api/merge', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ ids }) });
+    mergeSel.clear();
+    refresh(); go('import');
+    toast(`✅ 已整合：${j.contact}，${j.total} 条，${j.days} 天，可开始在「分析」页处理`, 3400);
+  } catch (e) { $('merge-status').textContent = ''; toast('❌ ' + e.message, 4200); }
+}
+
+// ── 设置 ──
+async function saveSettings(){
+  await api('/api/settings', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ base: $('st-base').value.trim(), key: $('st-key').value.trim(), model: $('st-model').value.trim(), blur: Number($('st-blur').value), overlay: S.overlay ? 1 : 0 }) });
+  S.blur = Number($('st-blur').value); applyBg(); toast('设置已保存');
+}
+// ── API 管理（历史列表增删/切换）──
+let S_API_LIST = [];
+async function renderApiList(){
+  const el = $('api-list'); if(!el) return;
+  // 加载历史 API 列表
+  try { const s = await api('/api/api-list'); S_API_LIST = s.list || []; } catch { S_API_LIST = []; }
+  const cur = { base: $('st-base').value.trim(), model: $('st-model').value.trim() };
+  if(!S_API_LIST.length){ el.innerHTML = '<div class="muted" style="padding:8px 2px;font-size:12px">暂无已保存的 API，填好上面后点「保存当前 API」</div>'; return; }
+  el.innerHTML = S_API_LIST.map((a,i) => `<div class="api-item">
+    <div class="ai-tag">${a.model?esc(a.model[0].toUpperCase()):'AI'}</div>
+    <div class="ai-body"><b>${esc(a.label || a.model || 'API')}</b><span>${esc(a.base)}</span></div>
+    <button class="minibtn ${a.active?'use rounded':''}" title="设为当前" onclick="useApi(${i})">${a.active?'✓':'↻'}</button>
+    <button title="删除" onclick="delApi(${i})"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+  </div>`).join('');
+}
+async function saveApi(){
+  const base = $('st-base').value.trim(), key = $('st-key').value.trim(), model = $('st-model').value.trim();
+  if(!base){ toast('请填 API 地址',2600); return; }
+  const r = await api('/api/api-save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ base, key, model, makeActive:true }) });
+  toast('API 已保存并设为当前'); renderApiList();
+}
+async function useApi(i){ const a = S_API_LIST[i]; if(!a) return; await api('/api/api-set-active', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id:a.id }) }); renderApiList(); }
+async function delApi(i){ const a = S_API_LIST[i]; if(!a) return; if(!confirm('删除这个 API？')) return; await api('/api/api-del', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id:a.id }) }); renderApiList(); }
+// ── 分身技能管理 ──
+let S_SKILLS = [];
+async function renderSkillList(){
+  const el = $('sk-list'); if(!el) return;
+  try { const s = await api('/api/skills'); S_SKILLS = s.list || []; } catch { S_SKILLS = []; }
+  if(!S_SKILLS.length){ el.innerHTML = '<div class="muted" style="padding:6px 2px;font-size:12px">暂无技能——添加后数字分身会学会这些</div>'; return; }
+  el.innerHTML = S_SKILLS.map((s,i) => `<div class="pick"><div class="pi"><b>${esc(s.name||'技能')}</b><span>${esc((s.content||'').slice(0,60))}</span></div><button style="border:none;background:transparent;color:var(--danger);cursor:pointer;font-size:12px" onclick="delSkill(${i})">删除</button></div>`).join('');
+}
+async function addSkill(){
+  const name = $('sk-name').value.trim(), content = $('sk-content').value.trim();
+  if(!name || !content){ toast('填一下技能名和规则',2600); return; }
+  await api('/api/skill-add', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, content }) });
+  $('sk-name').value=''; $('sk-content').value='';
+  await renderSkillList(); toast('技能已添加');
+}
+async function delSkill(i){ const s = S_SKILLS[i]; if(!s) return; await api('/api/skill-del', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id:s.id }) }); await renderSkillList(); toast('已删除'); }
+// ── 我的头像 ──
+function loadSelfAvatar(){
+  const img = $('self-avatar-preview'); if(!img) return;
+  img.src = '/api/self-avatar?t=' + Date.now();
+  img.style.display = 'block';
+}
+function uploadSelfAvatar(){
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='image/*';
+  inp.onchange = (e) => {
+    const f = e.target.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      fetch('/api/self-avatar-upload', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ data: rd.result }) })
+        .then(r=>r.json()).then(j=>{ if(j.ok){ toast('我的头像已上传'); loadSelfAvatar(); } else toast('上传失败: '+j.error); }).catch(()=>toast('上传失败',3000));
+    };
+    rd.readAsDataURL(f);
+  };
+  inp.click();
+}
+// ── 背景 ──
+function setBlur(v){ $('st-blur').value = v; S.blur = v; $('bg-blur-off').classList.toggle('on', v==0); $('bg-blur-mid').classList.toggle('on', v>0); applyBg(); }
+function uploadBg(){
+  const f = $('bg-file'); if(!f) return; f.onchange = (e) => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      // 上传到后端保存为自定义背景
+      fetch('/api/upload-bg', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ data: reader.result }) })
+        .then(r=>r.json()).then(j=>{ if(j.ok){ S.bgMode='custom'; setBg('custom'); toast('背景已上传'); } else toast('上传失败: '+j.error); }).catch(()=>toast('上传失败',3000));
+    };
+    reader.readAsDataURL(file);
+  };
+  f.click();
+}
+
+// ── 导入 ──
+const drop = $('drop');
+drop.onclick = () => $('file').click();
+$('file').onchange = (e) => { [...e.target.files].forEach(f => importFile(f)); e.target.value = ''; };
+['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => { [...e.dataTransfer.files].forEach(f => importFile(f)); });
+async function importFile(file){ toast('解析中：' + file.name); try { const text = await file.text(); const j = await api('/api/import', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ payload: text, fileName: file.name }) }); if(j.duplicate){ toast('⚠️ ' + (j.contact||'') + ' 已导入过（' + (j.total||0) + ' 条），未重复导入', 3800); } else { toast(`✅ ${j.contact}：${j.total} 条，${j.days} 天`); } refresh(); } catch (err) { toast('❌ ' + err.message, 4200); } }
+
+// ── Markdown 轻渲染 ──
+function md(s){ s = esc(s); const lines = s.split('\n'); let html = '', inList = false, inTable = false;
+  const closeList = () => { if (inList) { html += '</ul>'; inList = false; } };
+  for (let line of lines) {
+    if (/^\s*\|/.test(line) && /\|/.test(line.slice(1))) { if (!inTable) { html += '<table>'; inTable = true; } const cells = line.trim().replace(/^\||\|$/g,'').split('|').map(c => c.trim().replace(/\*\*/g,'')); html += '<tr>' + cells.map(c => c.startsWith('---') ? '' : `<td>${c}</td>`).join('') + '</tr>'; continue; }
+    if (inTable) { html += '</table>'; inTable = false; }
+    if (/^###/.test(line)) { closeList(); html += `<h3>${line.replace(/^#+\s*/,'')}</h3>`; }
+    else if (/^##/.test(line)) { closeList(); html += `<h2>${line.replace(/^#+\s*/,'')}</h2>`; }
+    else if (/^#/.test(line)) { closeList(); html += `<h2>${line.replace(/^#+\s*/,'')}</h2>`; }
+    else if (/^---/.test(line)) { closeList(); html += '<hr>'; }
+    else if (/^&gt;/.test(line)) { closeList(); html += `<blockquote>${line.replace(/^&gt;+\s?/,'')}</blockquote>`; }
+    else if (/^[-*•]\s/.test(line)) { if (!inList) { html += '<ul>'; inList = true; } html += `<li>${line.replace(/^[-*•]\s/,'')}</li>`; }
+    else if (/^\d+\.\s/.test(line)) { closeList(); html += `<p>${line.replace(/^\d+\.\s/,'')}</p>`; }
+    else if (line.trim() === '') { closeList(); }
+    else { closeList(); html += `<p>${line}</p>`; }
+  }
+  closeList(); if (inTable) html += '</table>';
+  return html.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+// ── 分析页子导航绑定 ──
+document.querySelectorAll('.an-tab').forEach(b => b.onclick = () => anGo(b.dataset.tab));
+// 同步两个 select
+$('an-rec').onchange = () => { $('an-rec-ai').value = $('an-rec').value; };
+$('an-rec-ai').onchange = () => { $('an-rec').value = $('an-rec-ai').value; };
+// ── 分析视角 ──
+let S_VIEW = 'love';
+async function loadViews(){
+  const el = $('view-chips'); if(!el) return;
+  try { const j = await api('/api/views'); const v = j.views || {}; S_VIEWS = v; } catch { S_VIEWS = {love:'情感军师'}; }
+  el.innerHTML = Object.keys(S_VIEWS).map(k => `<span class="chip ${S_VIEW===k?'on':''}" onclick="pickView('${k}')"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.6"/></svg>${esc(S_VIEWS[k])}</span>`).join('');
+}
+function pickView(k){ S_VIEW = k; $('an-ai-label').textContent = '生成' + (S_VIEWS[k]||'AI') + '分析'; loadViews(); }
+// ── 分析 ──
+$('an-stats-btn').onclick = async () => { const id = $('an-rec').value; if (!id) return toast('先选记录'); const btn = $('an-stats-btn'); btn.disabled = true; btn.textContent = '计算中…'; try { const st = await api('/api/stats/' + id); renderStats(st); btn.textContent = '重新计算'; toast('✅ 统计完成'); } catch (e) { btn.textContent = '计算统计'; toast('❌ ' + e.message, 4200); } btn.disabled = false; };
+$('an-ai-btn').onclick = async () => { const id = $('an-rec-ai').value || $('an-rec').value; if (!id) return toast('先选记录'); const btn = $('an-ai-btn'); btn.disabled = true; btn.textContent = '分析中…'; $('an-ai').innerHTML = '<div class="card"><div class="muted">AI 正在阅读你的聊天记录（全量统计 + 分层采样）…</div></div>';
+  try { const res = await fetch('/api/analyze', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id, view: S_VIEW }) }); const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '', full = '';
+    $('an-ai').innerHTML = '<div class="card md" id="an-out"></div>';
+    while (true) { const { done, value } = await reader.read(); if (done) break; buf += dec.decode(value, {stream:true}); const parts = buf.split('\n'); buf = parts.pop();
+      for (const p of parts) { if (!p.startsWith('data: ')) continue; try { const j = JSON.parse(p.slice(6)); if (j.error) { toast('❌ ' + j.error, 5000); continue; } if (j.delta) { full += j.delta; $('an-out').innerHTML = md(full); } } catch {} } }
+    $('an-status').textContent = '✅ 分析完成（已保存）'; refresh();
+  } catch (e) { toast('❌ ' + e.message, 5000); } finally { btn.disabled = false; btn.textContent = '生成 AI 深度分析'; } };
+function renderStats(st){ const s = st.scores || {}; const b = st.basic || {}; const it = st.initiative || {}; const r = st.reply_speed || {}; const bn = st.bombing || {}; const l = st.linguistic || {};
+  // 活跃时段排序
+  const hours = Object.entries(st.active_hours||{}).sort((a,b)=>b[1]-a[1]);
+  const hourMax = Math.max(1, ...hours.map(([,n])=>n));
+  const hourBars = hours.slice(0,8).map(([h,n]) => `<div class="hour-row"><span>${h}点</span><div class="hour-bar"><i style="width:${Math.round(n/hourMax*100)}%"></i></div><b>${n}</b></div>`).join('');
+  // 消息类型分布
+  const types = st.message_types||{};
+  const typeLabels = {'text':'文字','image':'图片','voice':'语音','video':'视频','emoji':'表情','link':'链接','system':'系统','file':'文件','revoke':'撤回'};
+  const typeNames = Object.keys(types).sort((a,b)=>types[b]-types[a]);
+  const typeMax = Math.max(1, ...typeNames.map(k=>types[k]));
+  const typeBars = typeNames.slice(0,8).map(k => `<div class="hour-row"><span>${typeLabels[k]||k}</span><div class="hour-bar" style="background:linear-gradient(90deg,#f5d0e0,#f9dce7)"><i style="width:${Math.round(types[k]/typeMax*100)}%;background:var(--accent2)"></i></div><b>${types[k]}</b></div>`).join('');
+  $('an-stats').innerHTML = `
+  <div class="statrow">
+    <div class="stat"><div class="v" style="color:var(--accent)">${s.simp_index ?? '-'}</div><div class="k">🔥 主动投入</div><div class="bar"><i style="width:${s.simp_index||0}%"></i></div></div>
+    <div class="stat"><div class="v" style="color:var(--accent2)">${s.loved_index ?? '-'}</div><div class="k">💝 被爱成分</div><div class="bar"><i style="width:${s.loved_index||0}%;background:linear-gradient(90deg,var(--accent2),#ffb6cb)"></i></div></div>
+    <div class="stat"><div class="v" style="color:#8a9dff">${s.cold_index ?? '-'}</div><div class="k">😶 冷淡成分</div><div class="bar"><i style="width:${s.cold_index||0}%;background:linear-gradient(90deg,#8a9dff,#b6c2ff)"></i></div></div>
+  </div>
+  <div class="card">
+    <b style="font-size:14px;margin-bottom:10px;display:block">📋 总览</b>
+    <table class="tbl">
+      <tr><th>总消息</th><td>${b.total_messages} 条（你 ${b.my_messages} / 对方 ${b.their_messages}，${Math.round((b.my_ratio||0)*100)}% : ${Math.round((b.their_ratio||0)*100)}%）</td><th>跨度</th><td>${b.total_days} 天 · 日均 ${b.avg_daily} 条</td></tr>
+      <tr><th>对话发起</th><td>你 ${it.my_starts} 次 / 对方 ${it.their_starts} 次</td><th>平均回复</th><td>你 ${r.my_avg_human||'-'} / 对方 ${r.their_avg_human||'-'}</td></tr>
+      <tr><th>平均长度</th><td>你 ${st.message_length?.my_avg_chars??'-'} 字 / 对方 ${st.message_length?.their_avg_chars??'-'} 字</td><th>连轰</th><td>你 ${bn.my_bomb_count??'-'} 次（最长 ${bn.my_max_consecutive??'-'} 连）/ 对方 ${bn.their_bomb_count??'-'} 次（最长 ${bn.their_max_consecutive??'-'}）</td></tr>
+      <tr><th>晚安</th><td>你 ${st.goodnight?.me??'-'} / 对方 ${st.goodnight?.them??'-'}</td><th>撤回</th><td>你 ${l.revoke?.me??'-'} / 对方 ${l.revoke?.them??'-'}</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <b style="font-size:14px;margin-bottom:12px;display:block">🗣 情绪与语言</b>
+    <div class="row wrap" style="gap:10px">
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3 3-5.5 7-5.5s7 2.5 7 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>积极 你${l.pos?.me??'-'} / 对方${l.pos?.them??'-'}</span>
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.8"/><path d="M5 20c0-3 3-5.5 7-5.5s7 2.5 7 5.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>消极 你${l.neg?.me??'-'} / 对方${l.neg?.them??'-'}</span>
+      <span class="tag"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>「我们」你${l.we?.me??'-'}次 / 对方${l.we?.them??'-'}次</span>
+      <span class="tag">语音 你${l.voice?.me??'-'} / 对方${l.voice?.them??'-'}</span>
+      <span class="tag">视频 你${l.video?.me??'-'} / 对方${l.video?.them??'-'}</span>
+      <span class="tag">表情 你${l.emoji?.me??'-'} / 对方${l.emoji?.them??'-'}</span>
+    </div>
+  </div>
+  <div class="card">
+    <b style="font-size:14px;margin-bottom:12px;display:block">🕒 活跃时段 TOP</b>
+    ${hourBars || '<div class="muted">无数据</div>'}
+  </div>
+  <div class="card">
+    <b style="font-size:14px;margin-bottom:12px;display:block">📦 消息类型分布</b>
+    ${typeBars || '<div class="muted">无数据</div>'}
+  </div>
+  ${renderCharts(st)}`; }
+
+// ── 统计图表（纯 SVG：折线/条形/扇形）──
+function renderCharts(st){
+  const daily = Object.entries(st.daily_trend||{}).sort((a,b)=>a[0]<b[0]?-1:1);
+  const types = st.message_types||{};
+  const hours = Object.entries(st.active_hours||{}).sort((a,b)=>b[1]-a[1]);
+  if(!daily.length && !Object.keys(types).length) return '';
+  let html = '<div class="chart-grid">';
+  // 折线：每日消息趋势
+  if(daily.length){ html += chartLine(daily); }
+  // 扇形：消息类型占比
+  if(Object.keys(types).length){ html += chartPie(types); }
+  // 条形：活跃时段
+  if(hours.length){ html += chartBars(hours); }
+  html += '</div>';
+  return html;
+}
+// 折线图
+function chartLine(daily){
+  const w=330,h=180,pad=34;
+  const max=Math.max(1,...daily.map(d=>d[1]));
+  const pts=daily.map((d,i)=>{ const x=pad+i*(w-pad*2)/Math.max(1,daily.length-1); const y=h-pad-(d[1]/max)*(h-pad*2); return [x,y]; });
+  const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=path+' L'+(w-pad)+' '+(h-pad)+' L'+pad+' '+(h-pad)+' Z';
+  const mid=daily[Math.floor(daily.length/2)]||daily[0];
+  return `<div class="chart-card"><b>📈 每日消息趋势</b><svg viewBox="0 0 ${w} ${h}" width="100%"><defs><linearGradient id="lg${daily.length}" x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="#7c6bff" stop-opacity=.3/><stop offset=1 stop-color="#7c6bff" stop-opacity=0/></linearGradient></defs><path d="${area}" fill="url(#lg${daily.length})"/><path d="${path}" fill="none" stroke="#7c6bff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><text x="${pad}" y="20" font-size="10" fill="#8a8ea6">${daily[daily.length-1][0]} · 峰值 ${Math.max(...daily.map(d=>d[1]))}</text></svg></div>`;
+}
+// 扇形图
+function chartPie(types){
+  const opts=Object.entries(types).filter(([,n])=>n>0);
+  const colors=['#7c6bff','#f780a8','#60a5fa','#34d399','#fbbf24','#f87171','#c084fc','#fb923c'];
+  const total=opts.reduce((a,[,n])=>a+n,0)||1;
+  let angle=-90, segs='';
+  const labels=['text','image','voice','video','emoji','link','system','file','revoke'];
+  const names={'text':'文字','image':'图片','voice':'语音','video':'视频','emoji':'表情','link':'链接','system':'系统','file':'文件','revoke':'撤回'};
+  opts.forEach(([k,n],i)=>{
+    const a2=angle+(n/total)*360;
+    const large=a2-angle>180?1:0;
+    const x1=50+40*Math.cos(angle*Math.PI/180), y1=50+40*Math.sin(angle*Math.PI/180);
+    const x2=50+40*Math.cos(a2*Math.PI/180), y2=50+40*Math.sin(a2*Math.PI/180);
+    segs+='<path d="M50 50 L'+x1.toFixed(1)+' '+y1.toFixed(1)+' A40 40 0 '+large+' 1 '+x2.toFixed(1)+' '+y2.toFixed(1)+' Z" fill="'+colors[i%colors.length]+'"/>';
+    angle=a2;
+  });
+  const legend=opts.slice(0,6).map(([k,n],i)=>`<span style="display:inline-flex;align-items:center;gap:5px;margin:2px 8px 2px 0;font-size:11px"><i style="width:9px;height:9px;border-radius:3px;background:${colors[i%colors.length]};display:inline-block"></i>${names[k]||k} ${Math.round(n/total*100)}%</span>`).join('');
+  return `<div class="chart-card"><b>🍩 消息类型占比</b><div style="display:flex;align-items:center;gap:8px"><svg viewBox="0 0 100 100" width="120" height="120">${segs}<circle cx="50" cy="50" r="26" fill="#fff"/><text x="50" y="54" text-anchor="middle" font-size="11" font-weight="800" fill="#16182b">${total}</text></svg><div style="flex:1;flex-wrap:wrap">${legend}</div></div></div>`;
+}
+// 条形图
+function chartBars(hours){
+  const w=330,h=150,pad=30;
+  const max=Math.max(1,...hours.map(h=>h[1]));
+  const bw=(w-pad*2)/hours.length;
+  const rects=hours.map(([h,n],i)=>{ const bh=(n/max)*(h-pad*2); const x=pad+i*bw+bw*0.15; const y=h-pad-bh; return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(bw*0.7).toFixed(1)}" height="${bh.toFixed(1)}" rx="5" fill="url(#bgbar)"/>`; }).join('');
+  const lbls=hours.slice(0,6).map(([h,n],i)=>`<text x="${(pad+i*bw+bw/2).toFixed(1)}" y="${(h-pad+14)}" font-size="9" fill="#8a8ea6" text-anchor="middle">${h}点</text>`).join('');
+  return `<div class="chart-card"><b>📊 活跃时段</b><svg viewBox="0 0 ${w} ${h}" width="100%"><defs><linearGradient id="bgbar" x1=0 y1=0 x2=0 y2=1><stop offset=0 stop-color="#7c6bff"/><stop offset=1 stop-color="#f780a8"/></linearGradient></defs>${rects}${lbls}</svg></div>`;
+}
+
+// 历史分析报告
+async function renderHistory(){
+  const el = $('an-history'); if(!el) return;
+  const sel = $('an-rec');
+  let list = [];
+  try { const j = await api('/api/history'); list = j.list || []; } catch { list = []; }
+  // 按当前选中记录过滤
+  const curId = sel.value;
+  const filtered = curId ? list.filter(h => h.id === curId) : list;
+  if(!filtered.length){ el.innerHTML = '<div class="hist-empty">还没有生成过 AI 分析报告——去「AI 分析」tab 生成一份吧</div>'; return; }
+  el.innerHTML = filtered.map(h => `<div class="hist-item ${S.histSel===h.reportId?'sel':''}" data-rid="${h.reportId}" onclick="viewReport('${h.reportId}')">
+    <div class="hi-ico"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l1.8 4.6L18.4 9.4 13.8 11.2 12 15.8 10.2 11.2 5.6 9.4 10.2 7.6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+    <div class="hi-body"><b>${esc(h.name||'分析报告')} · ${esc(h.contact||'')}</b><span>${esc(h.date||'')} · ${(h.chars||0)} 字 · ${h.fromAI?'AI 生成':'统计'}</span></div>
+  </div>`).join('');
+  // 默认展示第一份
+  if(S.histSel && filtered.some(h=>h.reportId===S.histSel)){ viewReport(S.histSel); }
+}
+function viewReport(rid){
+  S.histSel = rid;
+  document.querySelectorAll('.hist-item').forEach(el => { el.classList.toggle('sel', el.getAttribute('data-rid')===rid); });
+  renderHistoryPreview(rid);
+}
+async function renderHistoryPreview(rid){
+  const el = $('an-history'); if(!el) return;
+  try {
+    const j = await api('/api/report/' + rid);
+    el.innerHTML = '<div class="report-wrap md" style="margin-top:12px">' + md(j.text || '') + '</div>';
+  } catch(e){ toast('加载报告失败: '+e.message, 3000); }
+}
+
+// ── SSE 聊天 ──
+async function streamTalk(url, body, onDelta){ const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }); if (!res.ok) { const j = await res.json().catch(()=>({})); throw new Error(j.error || res.status); }
+  const reader = res.body.getReader(); const dec = new TextDecoder(); let buf = '', full = '';
+  while (true) { const { done, value } = await reader.read(); if (done) break; buf += dec.decode(value, {stream:true}); const parts = buf.split('\n'); buf = parts.pop();
+    for (const p of parts) { if (!p.startsWith('data: ')) continue; try { const j = JSON.parse(p.slice(6)); if (j.error) throw new Error(j.error); if (j.delta) { full += j.delta; onDelta(full); } } catch (e) { throw e; } } }
+  return full; }
+function addMsg(container, who, text, name, avUrl){ const el = document.createElement('div'); el.className = 'msg ' + who; const av = avUrl ? `<img class="m-av" src="${avUrl}">` : ''; const whose = (who==='me' ? (S.selfName||'你') : (name||'TA')); el.innerHTML = (who==='me' ? av+'<div class="m-wrap"><div class="who">'+whose+'</div><span></span></div>' : '<div class="m-wrap"><div class="who">'+whose+'</div><span></span></div>'+av); container.appendChild(el); const span = el.querySelector('span'); span.textContent = text; container.scrollTop = container.scrollHeight; return span; }
+
+// ── 探讨 ──
+async function talkAdvisor(){ if (!S.current) return toast('先在左侧选一个联系人'); const id = S.current.id; const inp = $('ad-in'); const text = inp.value.trim(); if (!text) return; inp.value = '';
+  const cat = $('ad-cat') ? $('ad-cat').value : 'love';
+  const el = $('ad-msgs'); if (el.querySelector('.empty')) el.innerHTML = ''; const hist = S.advisorHist || (S.advisorHist = []); addMsg(el, 'me', text, '你', '/api/self-avatar?t=' + Date.now()); hist.push({ role:'user', content: text });
+  const taAv = S.current && S.current.hasAvatar ? '/api/avatar/' + S.current.id + '?t=' + (S.current.ver||Date.now()) : '';
+  const span = addMsg(el, 'ta', '…', S.current ? S.current.contact : 'TA', taAv);
+  try { const full = await streamTalk('/api/talk', { id, mode:'advisor', advisorCat: cat, message: text, history: hist }, (f) => { span.textContent = f; }); hist.push({ role:'assistant', content: full }); }
+  catch (e) { span.textContent = '⚠️ ' + e.message; hist.pop(); } }
+function changeAdvisorCat(){ const v = $('ad-cat') ? $('ad-cat').value : 'love'; S.advisorHist = []; const el = $('ad-msgs'); if(el){ el.innerHTML = `<div class="empty" style="padding:24px">已切换到新的军师（${($('ad-cat').selectedOptions[0]||{}).text||''}），重新开始吧</div>`; } }
+
+// ── 分身 ──
+async function talkAvatar(){ if (!S.current) return toast('先在左侧选一个联系人'); const id = S.current.id; const inp = $('av-in'); const text = inp.value.trim(); if (!text) return; inp.value = '';
+  const el = $('av-msgs'); if (el.querySelector('.empty')) el.innerHTML = ''; const hist = S.avatarHist || (S.avatarHist = []); addMsg(el, 'me', text, '你', '/api/self-avatar'); hist.push({ role:'user', content: text });
+  const taAv = S.current && S.current.hasAvatar ? '/api/avatar/' + S.current.id + '?t=' + (S.current.ver||Date.now()) : '';
+  const span = addMsg(el, 'ta', '…', S.current ? S.current.contact : 'TA', taAv);
+  const who = S.cloneSide === 'them' ? (S.current?S.current.contact:'TA') : (S.current?S.current.selfName||'你':'你');
+  span.parentElement.querySelector('.who').textContent = who;
+  try { const full = await streamTalk('/api/talk', { id, mode:'persona', message: text, history: hist, cloneSide: S.cloneSide }, (f) => { span.textContent = f; }); hist.push({ role:'assistant', content: full }); }
+  catch (e) { span.textContent = '⚠️ ' + e.message; hist.pop(); } }
+function resetAvatar(){ S.avatarHist = []; $('av-msgs').innerHTML = '<div class="empty" style="padding:24px">会话已重置，TA 会重新认识你</div>'; $('av-hint').textContent = '已重置'; setTimeout(()=>$('av-hint').textContent='', 2600); }
+
+// ── 初始化 ──
+(async function init(){ try {
+  const s = await api('/api/settings'); $('st-base').value = s.base; $('st-model').value = s.model; $('st-key').placeholder = 'sk-...'; $('st-blur').value = s.blur ?? 55; S.blur = s.blur ?? 55;
+  S.overlay = s.overlay !== 0; // 默认开启白色蒙版（1），可关闭
+  S.bgMode = 'photo'; applyBg(); await refresh();
+  // 新页面 select 变更
+  if ($('tl-rec')) $('tl-rec').onchange = () => renderTimeline();
+  if ($('th-rec')) $('th-rec').onchange = () => renderThermo();
+  renderMems(); loadSelfAvatar();
+} catch (e) { toast('初始化失败：' + e.message, 5000); } })();
+</script>
+</body>
+</html>
